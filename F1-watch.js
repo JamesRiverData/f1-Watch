@@ -1,19 +1,49 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+import notifier from "node-notifier";
+
+// Load .env variables
+dotenv.config();
 
 // Works in Node 16 and 18+
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
-const notifier = require("node-notifier");
 
 // 👇 Track seen users per day
 let seenUIDs = new Set();
 let currentDate = new Date().toDateString();
 
-const API_URL =
-  "https://jamesriver.fellowshiponego.com/js/get_child_checkin_status/all";
+const API_URL = "https://jamesriver.fellowshiponego.com/js/get_child_checkin_status/all";
+const Login_URL = "https://jamesriver.fellowshiponego.com:443/api/user/login";
+const Get_Group_URL = `https://jamesriver.fellowshiponego.com/api/v2/groups/${process.env.groupId}`;
+
+const rawLogin = await fetch(Login_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    username: process.env.usernameForApi,
+    password: process.env.password,
+  }),
+});
 
 
-const f1Key = process.env.f1Key;
+
+var ParsedLogin = await rawLogin.json();
+
+const f1Key = ParsedLogin.data.session_id;
+
+const rawGroup = await fetch(Get_Group_URL, {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    "X-SessionID": f1Key,
+  },
+});
+
+var ParsedGroup = await rawGroup.json();
+
+const groupName = ParsedGroup.data.name
 
 async function checkPeople() {
   try {
@@ -41,7 +71,7 @@ async function checkPeople() {
 
     // 👇 Go directly into the alert group
     const alerts =
-      json["◘ALERT: CHECK PARENT INTO THIS GROUP (NO FOB ALLOWED)"];
+      json[groupName];
 
     if (!Array.isArray(alerts)) {
       console.error("Alert group not found or not an array");
@@ -52,10 +82,7 @@ async function checkPeople() {
       if (!seenUIDs.has(person.uid)) {
         seenUIDs.add(person.uid);
 
-
-
-        const Station_API_URL =
-  `https://jamesriver.fellowshiponego.com/api/v2/checkin/station/${person.stationId}`;
+        const Station_API_URL = `https://jamesriver.fellowshiponego.com/api/v2/checkin/station/${person.stationId}`;
 
         const resStation = await fetch(Station_API_URL, {
           method: "GET",
@@ -85,4 +112,4 @@ async function checkPeople() {
 }
 
 // Run every 5 seconds
-setInterval(checkPeople, 5000);
+setInterval(checkPeople, 2000);

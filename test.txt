@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "statusCode": 200,
+  "data": {
+    "fname": "asdf",
+    "lname": "asdfasd",
+    "uid": 980asdf92437,
+    "name": "asdfsda",
+    "mail": "",
+    "session_id": "asdfasfd",
+    "org_name": "James River Church, Inc"
+  }
+}

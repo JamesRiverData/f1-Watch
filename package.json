@@ -1,0 +1,21 @@
+{
+  "name": "f1-watch-folder",
+  "version": "1.0.0",
+  "description": "run node .\\F1-watch.js",
+  "type": "module",
+  "main": "F1-watch.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JamesRiverData/f1-Watch.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JamesRiverData/f1-Watch/issues"
+  },
+  "homepage": "https://github.com/JamesRiverData/f1-Watch#readme"
+}
